@@ -48,7 +48,7 @@ class Planet:
                     if planet == otherPlanet:
                         continue
                     
-                    nextStep = nextStep + Planet.accelFunc(otherPlanet.getMass(),posDif)
+                    nextStep = nextStep + h * Planet.accelFunc(otherPlanet.getMass(),posDif)
                     
                 
                 planet.addPosition(nextStep)
