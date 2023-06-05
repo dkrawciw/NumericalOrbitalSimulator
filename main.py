@@ -3,15 +3,16 @@ from Planet import Planet
 import numpy as np
 
 def main():
-    p1 = Planet(2,[np.array([500,-1,500,-1])])
-    p2 = Planet(1,[np.array([250,1,250,-1])])
+    p1 = Planet(800,[np.array([500,-0.5,500,0])])
+    p2 = Planet(1,[np.array([250,0,250,0])])
+    p3 = Planet(1,[np.array([750,0,900,0])])
+    p4 = Planet(800,[np.array([900,0.5,900,0])])
 
-    Planet.eulerSim([p1,p2],[0,10],0.25)
+    planetList = [p1,p4]
 
-    print(f"First Planet: {p1.getPositions()}")
-    print(f"Second Planet: {p2.getPositions()}")
+    Planet.eulerSim(planetList,[0,1000],0.25)
 
-    # RenderPoints.renderScreen([p1, p2])
+    RenderPoints.renderScreen( planetList, 20 )
 
 if __name__ == '__main__':
     main()
