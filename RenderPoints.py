@@ -1,3 +1,4 @@
+import time
 import numpy as np
 import pygame as pg
 from Planet import Planet
@@ -16,6 +17,7 @@ class RenderPoints:
 
 
         for i in range(0,len(posInfo[0])):
+            time.sleep(0.2)
 
             for event in pg.event.get():
                     if event.type == QUIT:
