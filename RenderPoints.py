@@ -1,3 +1,4 @@
+from random import randrange
 import pygame as pg
 from math import ceil
 from scipy.interpolate import CubicSpline
@@ -18,7 +19,7 @@ class RenderPoints:
 
         planetToRadius = {}
         for planet in planetToMass:
-            planetToRadius[planet] = ceil(maxRadius * planetToMass[planet] / largestMass)
+            planetToRadius[planet] = 1 + ceil(maxRadius * planetToMass[planet] / largestMass)
 
         return planetToRadius
 
@@ -27,30 +28,33 @@ class RenderPoints:
         planetToRadius = RenderPoints._setRadiusSizes(planetList, planetScale)
 
         # Create the interpolation functions for each trajectory
-        planetToSpline = {}
+        stepList = range(0,numOfSteps)
+        newPointList = {}
+        planetToColor = {}
+
         for planet in planetList:
+            # Make a random color for the planet
+            planetToColor[planet] = Color( randrange(150,256),randrange(150,256),randrange(150,256) )
+
             P = np.array( planet.getPositions() )
+            planetTime = np.linspace(planet.timeList[0],planet.timeList[-1], numOfSteps)
             
-            planetToSpline[planet] = [CubicSpline(planet.timeList, P[:,0]), CubicSpline(planet.timeList, P[:,2])]
+            equations = [CubicSpline(planet.timeList, P[:,0]), CubicSpline(planet.timeList, P[:,2])]
+
+            newPointList[planet] = [ equations[0](planetTime), equations[1](planetTime) ]
+
 
         pg.init()
         screen = pg.display.set_mode( (1500, 1500) )
-
-        stepList = range(0,numOfSteps)
-        newPointList = {}
-
-        for planet in planetList:
-            planetTime = np.linspace(planet.timeList[0],planet.timeList[-1], numOfSteps)
-            newPointList[planet] = [ planetToSpline[planet][0](planetTime), planetToSpline[planet][1](planetTime) ]
 
         for step in stepList:
             screen.fill(Color(0, 0, 0))
 
             for planet in planetList:
                 centerPos = ( newPointList[planet][0][step], newPointList[planet][1][step] )
-                pg.draw.circle(screen, Color(0,255,0), centerPos, planetToRadius[planet])
+                pg.draw.circle(screen, planetToColor[planet], centerPos, planetToRadius[planet])
                     
-                pg.display.update()
+            pg.display.update()
 
             for event in pg.event.get():
                 if event.type == QUIT:
