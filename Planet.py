@@ -1,11 +1,12 @@
 import numpy as np
-from math import floor
+from math import ceil
 from math import sqrt
 
 class Planet:
     def __init__(self, mass = 1, indepVariables = [np.array([0,0,0,0])]):
         self._mass = mass
         self._indepVariables = indepVariables
+        self.timeList = [0]
 
     def getPositions(self):
         return self._indepVariables
@@ -28,7 +29,11 @@ class Planet:
     # Outputted vector should look like: [x1', x2', y1', y2']
     @staticmethod
     def accelFunc( mass:int, w:np.array  ):
-        directionIndependentVal = (-1) * mass / (sqrt(w[2]**2 + w[0]**2 ) ** 3)
+        distance = sqrt(w[2]**2 + w[0]**2)
+        if distance < 5:
+            return np.array( [0,0,0,0] )
+
+        directionIndependentVal = (-1) * mass / (distance ** 3)
         xAccel = w[0] * directionIndependentVal
         yAccel = w[2] * directionIndependentVal
 
@@ -36,10 +41,13 @@ class Planet:
 
     @staticmethod
     def eulerSim( PlanetList, r, h ):
-        numOfSteps = floor((r[1] - r[0]) / h)
+        numOfSteps = ceil((r[1] - r[0]) / h)
         timeRange = np.linspace(r[0],r[1],numOfSteps)
 
-        for point in timeRange:
+        for planet in PlanetList:
+            planet.timeList = timeRange
+
+        for point in timeRange[1:]:
             for planet in PlanetList:
                 currPos = planet.getPositions()[-1]
                 nextStep = currPos
