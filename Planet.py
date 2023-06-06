@@ -62,3 +62,33 @@ class Planet:
                     
                 
                 planet.addPosition(nextStep)
+
+    @staticmethod
+    def rk4Sim( PlanetList, r, h ):
+        numOfSteps = ceil((r[1] - r[0]) / h)
+        timeRange = np.linspace(r[0],r[1],numOfSteps)
+
+        for planet in PlanetList:
+            planet.timeList = timeRange
+
+        for point in timeRange[1:]:
+            for planet in PlanetList:
+                currPos = planet.getPositions()[-1]
+                nextStep = currPos
+
+                for otherPlanet in PlanetList:
+                    posDif = currPos - otherPlanet.getPositions()[-1]
+                    # Check that the current planet isn't compared to itself
+                    if planet == otherPlanet:
+                        continue
+                    
+                    k1 = h * Planet.accelFunc(otherPlanet.getMass(),posDif)
+                    k2 = h * Planet.accelFunc(otherPlanet.getMass(),posDif + k1/2)
+                    k3 = h * Planet.accelFunc(otherPlanet.getMass(),posDif + k2/2)
+                    k4 = h * Planet.accelFunc(otherPlanet.getMass(),posDif + k3)
+
+                    nextStep = nextStep + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+                    
+                
+                planet.addPosition(nextStep)
+        
